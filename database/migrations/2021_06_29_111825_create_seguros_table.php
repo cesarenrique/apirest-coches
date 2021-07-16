@@ -17,7 +17,7 @@ class CreateSegurosTable extends Migration
             $table->bigIncrements('id');
             $table->string('tipo');
             $table->bigInteger('Agencia_id')->unsigned();
-            $table->foreign('Agencia_id')->references('id')->on('Agencias')->onDelete('cascade');
+            $table->foreign('Agencia_id')->references('id')->on('agencias')->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
         });

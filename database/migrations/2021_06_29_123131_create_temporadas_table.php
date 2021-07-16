@@ -19,7 +19,7 @@ class CreateTemporadasTable extends Migration
             $table->date('fecha_desde');
             $table->date('fecha_hasta');
             $table->bigInteger('Agencia_id')->unsigned();
-            $table->foreign('Agencia_id')->references('id')->on('Agencias')->onDelete('cascade');
+            $table->foreign('Agencia_id')->references('id')->on('agencias')->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
         });

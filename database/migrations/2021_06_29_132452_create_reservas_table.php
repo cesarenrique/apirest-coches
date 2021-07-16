@@ -22,7 +22,7 @@ class CreateReservasTable extends Migration
             $table->bigInteger('Fecha_id')->unsigned();
             $table->bigInteger('Alojamiento_id')->unsigned();
             $table->bigInteger('Coche_id')->unsigned();
-            $table->bigInteger('Cliente_id')->unsigned()->nullable();
+            $table->bigInteger('Cliente_id')->unsigned();
             $table->foreign('Fecha_id')->references('id')->on('fechas');
             $table->foreign('Alojamiento_id')->references('id')->on('alojamientos');
             $table->foreign('Coche_id')->references('id')->on('coches');

@@ -4,9 +4,10 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Pension;
+use App\Seguro;
 use App\TipoCoche;
 use App\Transformers\AgenciaTransformer;
+use App\Coche;
 
 class Agencia extends Model
 {
@@ -18,16 +19,16 @@ class Agencia extends Model
         'NIF', 'nombre', 'Localidad_id',
       ];
 
-    public function pensions(){
-        return $this->hasMany(Pension::class);
+    public function seguros(){
+        return $this->hasMany(Seguro::class);
     }
 
     public function tipo_coches(){
         return $this->hasMany(TipoCoche::class);
     }
 
-    public function habitacions(){
-        return $this->hasMany(Habitacion::class);
+    public function coches(){
+        return $this->hasMany(Coche::class);
     }
 
     public function fechas(){

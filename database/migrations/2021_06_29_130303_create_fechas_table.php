@@ -17,7 +17,7 @@ class CreateFechasTable extends Migration
             $table->bigIncrements('id');
             $table->date('abierto');
             $table->bigInteger('Agencia_id')->unsigned();
-            $table->foreign('Agencia_id')->references('id')->on('Agencias');
+            $table->foreign('Agencia_id')->references('id')->on('agencias');
             $table->timestamps();
             $table->softDeletes();
         });

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\ApiController;
 use App\Agencia;
-use App\Pension;
+use App\Seguro;
 
 class AgenciaReservaController extends ApiController
 {
@@ -60,10 +60,10 @@ class AgenciaReservaController extends ApiController
      **/
     public function index(Agencia $Agencia)
     {
-        $habitaciones=$Agencia->habitacions;
+        $coches=$Agencia->coches;
         $previo=collect();
-        foreach($habitaciones as $habitacion){
-          $previo->push($habitacion->reservas);
+        foreach($coches as $coche){
+          $previo->push($coche->reservas);
         }
         $reservas=$previo->collapse();
         return $this->showAll($reservas);

@@ -59,8 +59,10 @@ class CocheAlojamientoController extends ApiController
      *)
      *
      **/
-    public function index(Coche $Coche)
+    public function index($Coche_id)
     {
+
+      $Coche=Coche::findOrFail($Coche_id);
       $tipohab=TipoCoche::findOrFail($Coche->tipo_Coche_id);
       $alojamientos=$tipohab->alojamientos;
       return $this->showAll($alojamientos);

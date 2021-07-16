@@ -62,8 +62,9 @@ class CocheFechasController extends ApiController
           *
           **/
 
-    public function index(Coche $Coche)
+    public function index($coche_id)
     {
+        $Coche=Coche::findOrFail($coche_id);
         $Agencia=Agencia::findOrFail($Coche->Agencia_id);
         $fechas=$Agencia->fechas;
         $reservas=$Coche->reservas;

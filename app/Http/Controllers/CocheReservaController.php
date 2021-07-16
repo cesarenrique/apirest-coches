@@ -57,8 +57,9 @@ class CocheReservaController extends ApiController
      *)
      *
      **/
-    public function index(Coche $Coche)
+    public function index($coche_id)
     {
+        $Coche=Coche::findOrFail($coche_id);
         $reservas=$Coche->reservas;
         return $this->showAll($reservas);
     }

@@ -18,8 +18,8 @@ class CreateCochesTable extends Migration
             $table->string('numero');
             $table->bigInteger('Agencia_id')->unsigned();
             $table->bigInteger('tipo_Coche_id')->unsigned();
-            $table->foreign('Agencia_id')->references('id')->on('Agencias')->onDelete('cascade');
-            $table->foreign('tipo_Coche_id')->references('id')->on('tipo_Coches')->onDelete('cascade');
+            $table->foreign('Agencia_id')->references('id')->on('agencias')->onDelete('cascade');
+            $table->foreign('tipo_Coche_id')->references('id')->on('tipo_coches')->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
         });

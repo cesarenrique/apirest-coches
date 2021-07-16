@@ -35,8 +35,8 @@ class AlojamientoTransformer extends TransformerAbstract
         return [
           'identificador'=>(int)$alojamiento->id,
           'precio'=> (string)$alojamiento->precio,
-          'PensionIdentificador'=>(int)$alojamiento->Pension_id,
-          'TipoHabitacionIdentificador'=>(int)$alojamiento->tipo_habitacion_id,
+          'SeguroIdentificador'=>(int)$alojamiento->Seguro_id,
+          'TipoCocheIdentificador'=>(int)$alojamiento->tipo_coche_id,
           'TemporadaIdentificador'=>(int)$alojamiento->Temporada_id,
           'fechaCreacion'=>(string)$alojamiento->created_at,
           'fechaActualizacion'=>(string)$alojamiento->updated_at,

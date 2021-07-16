@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\ApiController;
 use App\Alojamiento;
-use App\TipoHabitacion;
+use App\TipoCoche;
 use App\Agencia;
 
 class AlojamientoAgenciaController extends ApiController
@@ -18,7 +18,8 @@ class AlojamientoAgenciaController extends ApiController
     public function index($alojamiento_id)
     {
         $alojamiento=Alojamiento::findOrFail($alojamiento_id);
-        $tipo=TipoHabitacion::findOrFail($alojamiento->tipo_coche_id);
+        $tipo=TipoCoche::findOrFail($alojamiento->tipo_coche_id);
+        dd($tipo->Agencia_id);
         $Agencia=Agencia::findOrFail($tipo->Agencia_id);
 
         return $this->showOne($Agencia);

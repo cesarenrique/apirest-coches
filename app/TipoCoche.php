@@ -28,7 +28,7 @@ class TipoCoche extends Model
       'Agencia_id',
     ];
 
-    public function Coches(){
+    public function coches(){
       return $this->hasMany(Coche::class);
     }
 

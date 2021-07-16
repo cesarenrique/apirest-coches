@@ -7,7 +7,7 @@ use App\Http\Controllers\ApiController;
 use App\Reserva;
 use App\Fecha;
 use App\Alojamiento;
-use App\Habitacion;
+use App\Coche;
 use App\Pension;
 use App\Temporada;
 use App\Http\Controllers\TemporadaController;
@@ -46,27 +46,27 @@ class ReservaFechaController extends ApiController
       $rules=[
         'fecha_desde'=> 'required',
         'fecha_hasta'=> 'required',
-        'Pension_id' => 'required',
-        'Habitacion_id'=> 'required|exists:habitacions,id',
+        'Seguro_id' => 'required|exists:seguros,id',
+        'Coche_id'=> 'required|exists:coches,id',
         'Cliente_id'=> 'required|exists:clientes,id',
         'Tarjeta' => "min:15",
       ];
       $this->validate($request,$rules);
 
-      $habitacion=Habitacion::findOrFail($request->Habitacion_id);
-      if($this->puedeReservarseValidar($habitacion->Hotel_id,$request->fecha_desde,$request->fecha_hasta)){
-          $fechas=Fecha::whereBetween('abierto',[$request->fecha_desde,$request->fecha_hasta])->where('Hotel_id',$habitacion->Hotel_id)->get();
+      $Coche=Coche::findOrFail($request->Coche_id);
+      if($this->puedeReservarseValidar($Coche->Agencia_id,$request->fecha_desde,$request->fecha_hasta)){
+          $fechas=Fecha::whereBetween('abierto',[$request->fecha_desde,$request->fecha_hasta])->where('Agencia_id',$Coche->Agencia_id)->get();
           $collection=new Collection();
 
           foreach ($fechas as $fecha) {
             $campos=array();
             $campos['reservado']=Reserva::PRERESERVADO;
             $campos['estado']=RESERVA::PENDIENTE_PAGO;
-            $campos['Habitacion_id']=$habitacion->id;
+            $campos['Coche_id']=$Coche->id;
             $campos['Cliente_id']=$request->Cliente_id;
             $campos['pagado']='0';
-            $temporada=Temporada::where('Hotel_id',$habitacion->Hotel_id)->where('fecha_desde','<=',$fecha->abierto)->where('fecha_hasta','>=',$fecha->abierto)->firstOrFail();
-            $alojamiento=Alojamiento::where('tipo_habitacion_id',$habitacion->tipo_habitacion_id)
+            $temporada=Temporada::where('Agencia_id',$Coche->Agencia_id)->where('fecha_desde','<=',$fecha->abierto)->where('fecha_hasta','>=',$fecha->abierto)->firstOrFail();
+            $alojamiento=Alojamiento::where('tipo_Coche_id',$Coche->tipo_Coche_id)
             ->where('Temporada_id',$temporada->id)->where('Pension_id',$request->Pension_id)->firstOrFail();
             $campos['Temporada_id']=$temporada->id;
             $campos['Alojamiento_id']=$alojamiento->id;
@@ -78,7 +78,7 @@ class ReservaFechaController extends ApiController
             });
             $reserva=Reserva::where('Cliente_id',$request->Cliente_id)
              ->where('Alojamiento_id',$alojamiento->id)
-             ->where('Habitacion_id',$habitacion->id)
+             ->where('Coche_id',$Coche->id)
              ->where('Fecha_id',$fecha->id)->firstOrFail();
              $collection->push($reserva);
 
@@ -94,11 +94,11 @@ class ReservaFechaController extends ApiController
       $campos['estado']=RESERVA::PAGADO_TOTALMENTE;
 
       $fecha=Fecha::findOrFail($request->Fecha_id);
-      $habitacion=Habitacion::findOrFail($request->Habitacion_id);
+      $Coche=Coche::findOrFail($request->Coche_id);
       $alojamiento=Alojamiento::findOrFail($request->Alojamiento_id);
       $pension=Pension::findOrFail($alojamiento->Pension_id);
-      if(!($fecha->Hotel_id==$habitacion->Hotel_id && $fecha->Hotel_id==$pension->Hotel_id)){
-        return $this->errorResponse('Fecha_id, Habitacion_id, Alojamiento_id deben ser del mismo hotel',405);
+      if(!($fecha->Agencia_id==$Coche->Agencia_id && $fecha->Agencia_id==$pension->Agencia_id)){
+        return $this->errorResponse('Fecha_id, Coche_id, Alojamiento_id deben ser del mismo Agencia',405);
       }
 
       $campos['pagado']=$alojamiento->precio;
@@ -109,7 +109,7 @@ class ReservaFechaController extends ApiController
       });
       $reserva_previo=Reserva::where('Cliente_id',$request->Cliente_id)
        ->where('Alojamiento_id',$request->Alojamiento_id)
-       ->where('Habitacion_id',$request->Habitacion_id)
+       ->where('Coche_id',$request->Coche_id)
        ->where('Fecha_id',$request->Fecha_id)->get();
 
        if($reserva_previo->isEmpty()){

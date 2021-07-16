@@ -196,7 +196,7 @@ class AlojamientoController extends ApiController
      **/
     public function update(Request $request, $id)
     {
-      $alojamiento=Agencia::findOrFail($id);
+      $alojamiento=Alojamiento::findOrFail($id);
       $rules=[
         'precio'=> 'required',
       ];
@@ -273,12 +273,12 @@ class AlojamientoController extends ApiController
     public function descriptivo($alojamiento_id){
 
        $alojamiento=Alojamiento::findOrFail($alojamiento_id);
-       $alojamientos=DB::select("select a.id 'identificador', precio 'precio', p2.tipo 'pension',
-          th.tipo 'tipoHabitacion', t.tipo 'temporada', t.fecha_desde, t.fecha_hasta
-          from alojamientos a, pensions p2 ,tipo_habitacions th ,temporadas t
+       $alojamientos=DB::select("select a.id 'identificador', precio 'precio', p2.tipo 'seguro',
+          th.tipo 'tipoCoche', t.tipo 'temporada', t.fecha_desde, t.fecha_hasta
+          from alojamientos a, seguros p2 ,tipo_coches th ,temporadas t
           where  p2.Agencia_id=th.Agencia_id  and p2.Agencia_id =t.Agencia_id
-          and a.Pension_id =p2.id
-          and a.tipo_habitacion_id =th.id and t.id =a.Temporada_id
+          and a.Seguro_id =p2.id
+          and a.tipo_coche_id =th.id and t.id =a.Temporada_id
           and a.id =".$alojamiento->id );
        $collection = new Collection();
        foreach($alojamientos as $alojamiento){

@@ -7,7 +7,7 @@ use App\Http\Controllers\ApiController;
 use Illuminate\Support\Facades\DB;
 use App\Agencia;
 use DateTime;
-
+use App\Fecha;
 class AgenciaFechaController extends ApiController
 {
 
@@ -93,9 +93,14 @@ class AgenciaFechaController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($Agencia_id,$id)
     {
-        //
+        $Agencia=Agencia::findOrFail($Agencia_id);
+        $fecha=Fecha::findOrFail($id);
+        if($Agencia->id!=$fecha->Agencia_id){
+            return $this->errorResponse("Agencia debe coincidir con fecha del mismo sitio",404);
+        }
+        return $this->showOne($fecha);
     }
 
     /**

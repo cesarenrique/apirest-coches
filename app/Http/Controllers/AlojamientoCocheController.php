@@ -131,19 +131,19 @@ class AlojamientoCocheController extends ApiController
            return $this->errorResponse("fecha_desde no puede ser mayor fecha_hasta",404);
         }
 
-        $dias=$fechadesde->diffInDays($fechaHasta);
+        $dias=$fechaDesde->diffInDays($fechaHasta);
         $alojamiento=Alojamiento::findOrFail($alojamiento_id);
-        $tipo=TipoCoche::findOrFail($alojamiento->tipo_Coche_id);
-        $Cochees=$tipo->Coches;
+        $tipo=TipoCoche::findOrFail($alojamiento->tipo_coche_id);
+        $Cochees=$tipo->coches;
         $collection=new Collection();
         foreach($Cochees as $Coche){
-          $cantidad=DB::select("select count(f.id) 'cantidad' from fechas f  Coches h
-           where f.Hotel_id=h.Agencia_id
-           and f.Hotel_id =".$Coche->Hotel_id." and '".$fechadesde."'<=f.abierto
+          $cantidad=DB::select("select count(f.id) 'cantidad' from fechas f , coches h
+           where f.Agencia_id=h.Agencia_id
+           and f.Agencia_id =".$Coche->Agencia_id." and '".$fechaDesde."'<=f.abierto
            and f.abierto<= '".$fechaHasta."' and h.id =".$Coche->id);
-           $cantidad2=select("select count(f.id) 'cantidad' from fechas f , Coches h,reservas r
-           where f.Hotel_id=h.Agencia_id
-           and f.Hotel_id =".$Coche->Hotel_id." and '".$fechadesde."'<=f.abierto and r.Coche_id =h.id
+           $cantidad2=DB::select("select count(f.id) 'cantidad' from fechas f , Coches h,reservas r
+           where f.Agencia_id=h.Agencia_id
+           and f.Agencia_id =".$Coche->Agencia_id." and '".$fechaDesde."'<=f.abierto and r.Coche_id =h.id
            and f.id=r.Fecha_id
            and f.abierto<= '".$fechaHasta."' and h.id =".$Coche->id);
           if($dias==($cantidad[0]->cantidad-$cantidad2[0]->cantidad)){

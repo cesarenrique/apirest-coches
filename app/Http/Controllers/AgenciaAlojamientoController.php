@@ -7,6 +7,7 @@ use App\Http\Controllers\ApiController;
 use Illuminate\Support\Facades\DB;
 use App\Agencia;
 use App\Alojamiento;
+use App\Seguro;
 use Illuminate\Support\Collection;
 
 class AgenciaAlojamientoController extends ApiController
@@ -64,10 +65,10 @@ class AgenciaAlojamientoController extends ApiController
     public function index($Agencia_id)
     {
       $Agencia=Agencia::findOrFail($Agencia_id);
-      $pensiones=$Agencia->pensions;
+      $seguros=$Agencia->seguros;
       $previo=collect();
-      foreach($pensiones as $pension){
-        $previo->push($pension->alojamientos);
+      foreach($seguros as $seguro){
+        $previo->push($seguro->alojamientos);
       }
       $alojamientos=$previo->collapse();
       return $this->showAll($alojamientos);
@@ -100,9 +101,15 @@ class AgenciaAlojamientoController extends ApiController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($Agencia_id,$id)
     {
-        //
+        $Agencia=Agencia::findOrFail($Agencia_id);
+        $alojamiento=Alojamiento::findOrFail($id);
+        $seguro=Seguro::findOrFail($alojamiento->Seguro_id);
+        if($Agencia->id!=$seguro->Agencia_id){
+            return $this->errorResponse("Agencia debe coincidir con Alojamiento del mismo sitio",404);
+        }
+        return $this->showOne($alojamiento);
     }
 
     /**
@@ -148,24 +155,26 @@ class AgenciaAlojamientoController extends ApiController
     public function generar($Agencia_id)
     {
         $Agencia=Agencia::findOrFail($Agencia_id);
-        $alojamientos=DB::select("select p.id 'Pension_id',th.id 'tipo_habitacion_id',t.id 'Temporada_id', p.Agencia_id
-            from pensions p, tipo_habitacions th, temporadas t
+        $alojamientos=DB::select("select p.id 'Seguro_id',th.id 'tipo_coche_id',t.id 'Temporada_id', p.Agencia_id
+            from seguros p, tipo_coches th, temporadas t
               where p.Agencia_id =t.Agencia_id and th.Agencia_id=t.Agencia_id and p.Agencia_id =th.Agencia_id  and p.Agencia_id=".$Agencia->id);
 
 
 
         foreach ($alojamientos as $alojamiento) {
-            $cantidad=DB::select("select count(*) as 'cantidad' from alojamientos a where a.Pension_id=".$alojamiento->Pension_id." and a.tipo_habitacion_id=".$alojamiento->tipo_habitacion_id." and a.Temporada_id=".$alojamiento->Temporada_id." and a.deleted_at is null");
+            $cantidad=DB::select("select count(*) as 'cantidad' from alojamientos a where a.Seguro_id=".$alojamiento->Seguro_id." and a.tipo_coche_id=".$alojamiento->tipo_coche_id." and a.Temporada_id=".$alojamiento->Temporada_id." and a.deleted_at is null");
 
             if($cantidad[0]->cantidad==0){
-                $cantidad=DB::select("select count(*) as 'cantidad' from alojamientos a where a.Pension_id=".$alojamiento->Pension_id." and a.tipo_habitacion_id=".$alojamiento->tipo_habitacion_id." and a.Temporada_id=".$alojamiento->Temporada_id);
+                $cantidad=DB::select("select count(*) as 'cantidad' from alojamientos a where a.Seguro_id=".$alojamiento->Seguro_id." and a.tipo_coche_id=".$alojamiento->tipo_coche_id." and a.Temporada_id=".$alojamiento->Temporada_id);
+
                 $precio="99.99";
                 if($cantidad[0]->cantidad==0){
 
 
-                  DB::statement(' Insert into alojamientos (Pension_id,tipo_habitacion_id,Temporada_id,precio) values ('.$alojamiento->Pension_id.','.$alojamiento->tipo_habitacion_id.','.$alojamiento->Temporada_id.','.$precio.')');
+                  DB::statement(' Insert into alojamientos (Seguro_id,tipo_coche_id,Temporada_id,precio) values ('.$alojamiento->Seguro_id.','.$alojamiento->tipo_coche_id.','.$alojamiento->Temporada_id.','.$precio.')');
+
                 }else{
-                  $cantidad=DB::select("select a.id from alojamientos a where a.Pension_id=".$alojamiento->Pension_id." and a.tipo_habitacion_id=".$alojamiento->tipo_habitacion_id." and a.Temporada_id=".$alojamiento->Temporada_id);
+                  $cantidad=DB::select("select a.id from alojamientos a where a.Seguro_id=".$alojamiento->Seguro_id." and a.tipo_coche_id=".$alojamiento->tipo_coche_id." and a.Temporada_id=".$alojamiento->Temporada_id);
                   Alojamiento::withTrashed()->find($cantidad[0]->id)->restore();
                   $encontrado=Alojamiento::findOrFail($cantidad[0]->id);
                   $encontrado->precio=$precio;
@@ -179,12 +188,12 @@ class AgenciaAlojamientoController extends ApiController
 
     public function descriptivo($Agencia_id){
        $Agencia=Agencia::findOrFail($Agencia_id);
-       $alojamientos=DB::select("select a.id 'identificador', precio 'precio', p2.tipo 'pension',
-          th.tipo 'tipoHabitacion', t.tipo 'temporada', t.fecha_desde, t.fecha_hasta
-          from alojamientos a, pensions p2 ,tipo_habitacions th ,temporadas t
+       $alojamientos=DB::select("select a.id 'identificador', precio 'precio', p2.tipo 'seguro',
+          th.tipo 'tipoCoche', t.tipo 'temporada', t.fecha_desde, t.fecha_hasta
+          from alojamientos a, seguros p2 ,tipo_coches th ,temporadas t
           where  p2.Agencia_id=th.Agencia_id  and p2.Agencia_id =t.Agencia_id
-          and a.Pension_id =p2.id
-          and a.tipo_habitacion_id =th.id and t.id =a.Temporada_id
+          and a.Seguro_id =p2.id
+          and a.tipo_coche_id =th.id and t.id =a.Temporada_id
           and p2.Agencia_id =".$Agencia->id );
        $collection = new Collection();
        foreach($alojamientos as $alojamiento){

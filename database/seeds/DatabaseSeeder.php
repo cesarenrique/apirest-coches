@@ -239,7 +239,7 @@ class DatabaseSeeder extends Seeder
 
       foreach ($alojamientos as $alojamiento) {
           $precio=strval($faker->randomFloat($nbMaxDecimals = 2, $min = 1, $max = 2000));
-          DB::statement(' Insert into alojamientos (Seguro_id,tipo_Coche_id,Temporada_id,precio) values ('.$alojamiento->Seguro_id.','.$alojamiento->tipo_Coche_id.','.$alojamiento->Temporada_id.','.$precio.')');
+          DB::statement(' Insert into alojamientos (Seguro_id,tipo_coche_id,Temporada_id,precio) values ('.$alojamiento->Seguro_id.','.$alojamiento->tipo_Coche_id.','.$alojamiento->Temporada_id.','.$precio.')');
 
        }
     }
